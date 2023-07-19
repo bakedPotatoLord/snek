@@ -320,21 +320,18 @@ function checkEagleCollision() {
 };
 
 function logKey(event: KeyboardEvent) {
-
-	if ((event.key == 'w' || event.key == 'ArrowUp') && snek.displayDirection != 180) {
+	event.preventDefault()
+	console.log(event.code)
+	if ((event.key == 'w' || event.code == 'ArrowUp') && snek.displayDirection != 180) {
 		pDirection = 0;
-	} else if ((event.key == 'd' || event.key == 'ArrowLeft') && snek.displayDirection != 270) {
+	} else if ((event.key == 'd' || event.code == 'ArrowRight') && snek.displayDirection != 270) {
 		pDirection = 90;
-	} else if ((event.key == 's' || event.key == 'ArrowDown') && snek.displayDirection != 0) {
+	} else if ((event.key == 's' || event.code == 'ArrowDown') && snek.displayDirection != 0) {
 		pDirection = 180;
-	} else if ((event.key == 'a' || event.key == 'ArrowRight') && snek.displayDirection != 90) {
+	} else if ((event.key == 'a' || event.code == 'ArrowLeft') && snek.displayDirection != 90) {
 		pDirection = 270;
 	};
 }
-
-window.onload = function () {
-	
-};
 
 // must factor in game.paused == false && game.startPage == false
 function gameOn() {
@@ -458,17 +455,13 @@ function displayLoop() {
 	};
 };
 
-document.addEventListener('keypress', logKey);
+document.addEventListener('keyup', logKey);
 
 document.addEventListener("keydown", function (e) {
-	if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) {
+	if (["Space","ArrowUp","ArrowDown"].includes(e.code)) {
 		e.preventDefault();
 	}
-}, false);
-
-
-
-
+});
 
 //****************************************//
 
