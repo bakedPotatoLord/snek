@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>SNEK</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+
+		<link rel="icon" href="images/icon.ico"/>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+  </head>
+  <body>
+		<div class='hidden'>
+			<audio loop id='theme1'>
+				<source src='audio/theme1.mp3' type="audio/mpeg">
+			</audio>
+			<audio id='eat'>
+				<source src='audio/eat.wav' type="audio/wav">
+			</audio>
+			<audio loop id='pauseAudio'>
+				<source src='audio/pause.mp3' type="audio/mpeg">
+			</audio>
+			<img id='eagle' src='images/eagle.png'>
+      <img id='eagleShadow' src='images/eagleShadow.png'>
+			<img id='snek' src='images/snek.png'>
+			<img id='mouse' src='images/mouse.png'>
+			<img id='dirt' src='images/dirt.png'>
+      <img id='rock' src='images/rock.png'>
+			<img id='mud' src='images/mud.jpg'>
+			<img id='bImg' src='images/background.png'>
+    
+			<img id='pause' src='images/pause.png'>
+			<img id='heart' src='images/heart.png'>
+			<img id='play' src='images/play.png'>
+			<img id='resetImg' src='images/reset.png'>
+		</div>
+		<img id='logo' src='images/logo.png'>
+		<br>
+    <canvas id='c' width='600' height='460'></canvas>
+		<br>
+    <h1>Instructions</h1>
+    <br>
+    <p>
+      You are a snake in the desert trying to survive. Eat mice to grow while avoiding the eagle. Oh, and don't bite yourself or the wall.
+    </p>
+		<script src="graphics.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
