@@ -332,18 +332,8 @@ function logKey(event: KeyboardEvent) {
 	};
 }
 
-
-
 window.onload = function () {
-	resetEagle();
-	resetFood();
-	resetRock();
-
-	window.setInterval(displayLoop, 22);
-	window.setInterval(foodLoop, 800);
-	window.setInterval(eagleLoop, 150);
-
-	window.setTimeout(snekLoop, snek.loopSpeed);
+	
 };
 
 // must factor in game.paused == false && game.startPage == false
@@ -664,5 +654,15 @@ export default <DefineComponent>{
 			};
 		
 		});
+
+		resetEagle();
+		resetFood();
+		resetRock();
+
+		window.setInterval(displayLoop, 22);
+		window.setInterval(foodLoop, 800);
+		window.setInterval(eagleLoop, 150);
+
+		window.setTimeout(snekLoop, snek.loopSpeed);
 	}
 }
