@@ -1,22 +1,22 @@
 import Cookies from 'js-cookie'
 import { DefineComponent } from 'vue';
 import { createAudio, createImage } from './functions.js'
-
-import bImg from './assets/images/background.png'
-import dirtImg from './assets/images/dirt.png'
-import eagleImg from './assets/images/eagle.png'
-import eagleShadow from './assets/images/eagleShadow.png'
-import heartImg from './assets/images/heart.png'
-import mouseImg from './assets/images/mouse.png'
-import pauseImg from './assets/images/pause.png'
-import playImg from './assets/images/play.png'
-import resetImgString from './assets/images/reset.png'
-import rockImg from './assets/images/rock.png'
-import snekImg from './assets/images/snek.png'
-
-import eat from './assets/audio/eat.wav';
-import pauseAudio from './assets/audio/pause.mp3';
-import theme1 from './assets/audio/theme1.mp3';
+//images
+import bImg from '../assets/images/background.png'
+import dirtImg from '../assets/images/dirt.png'
+import eagleImg from '../assets/images/eagle.png'
+import eagleShadow from '../assets/images/eagleShadow.png'
+import heartImg from '../assets/images/heart.png'
+import mouseImg from '../assets/images/mouse.png'
+import pauseImg from '../assets/images/pause.png'
+import playImg from '../assets/images/play.png'
+import resetImgString from '../assets/images/reset.png'
+import rockImg from '../assets/images/rock.png'
+import snekImg from '../assets/images/snek.png'
+//audio
+import eat from '../assets/audio/eat.wav';
+import pauseAudio from '../assets/audio/pause.mp3';
+import theme1 from '../assets/audio/theme1.mp3';
 
 let c: HTMLCanvasElement
 let ctx: CanvasRenderingContext2D

@@ -11,6 +11,6 @@
   </p>
 </template>
 
-<script src="./script.ts" lang="ts" type="module"></script>
+<script src="./scripts/script.ts" lang="ts" type="module"></script>
 
 <style scoped></style>
