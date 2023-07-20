@@ -4,8 +4,6 @@ import { createAudio, createImage } from './functions.js'
 //images
 import bImg from '../assets/images/background.png'
 import dirtImg from '../assets/images/dirt.png'
-import eagleImg from '../assets/images/eagle.png'
-import eagleShadow from '../assets/images/eagleShadow.png'
 import heartImg from '../assets/images/heart.png'
 import mouseImg from '../assets/images/mouse.png'
 import pauseImg from '../assets/images/pause.png'
@@ -17,6 +15,12 @@ import snekImg from '../assets/images/snek.png'
 import eat from '../assets/audio/eat.wav';
 import pauseAudio from '../assets/audio/pause.mp3';
 import theme1 from '../assets/audio/theme1.mp3';
+
+//game objects
+
+import Eagle from './Eagle.js';
+
+const eagle = new Eagle()
 
 let c: HTMLCanvasElement
 let ctx: CanvasRenderingContext2D
@@ -38,15 +42,7 @@ export const game = {
 	bImg: createImage(bImg),
 }
 
-const eagle = {
-	'image': createImage(eagleImg),
-	'shadowImage': createImage(eagleShadow),
-	'x': 40,
-	'y': 40,
-	'anim': 0,
-	'rotation': 1,
-	'shadowIntensity': 10,
-};
+
 
 const snek = {
 	'image': createImage(snekImg),
@@ -124,7 +120,7 @@ function reset() {
 	pArray = [[300, 200], [280, 200], [260, 200]];
 	pDirection = 90;
 	//reset mouse and eagle
-	resetEagle()
+	eagle.reset()
 	game.paused = false;
 	game.startPage = false;
 	game.over = false
@@ -140,7 +136,7 @@ function lifeReset() {
 	pDirection = 90;
 	//reset mouse and eagle
 	resetFood()
-	resetEagle()
+	eagle.reset()
 	resetRock();
 	snek.life -= 1;
 }
@@ -193,34 +189,9 @@ function calcDirection() {
 	snek.displayDirection = pDirection
 }
 
-function resetEagle() {
-	eagle.rotation = Math.floor(Math.random() * 4)
-	if (eagle.rotation == 0) {
-		eagle.x = Math.floor(Math.random() * 28) * 20 + 20
-		eagle.y = 420
-	} else if (eagle.rotation == 1) {
-		eagle.x = -40
-		eagle.y = Math.floor(Math.random() * 18) * 20 + 20
-	} else if (eagle.rotation == 2) {
-		eagle.x = Math.floor(Math.random() * 28) * 20 + 20
-		eagle.y = -40
-	} else if (eagle.rotation == 3) {
-		eagle.x = 620
-		eagle.y = Math.floor(Math.random() * 18) * 20 + 20
-	};
-};
 
-function updateEagleLocation() {
-	if (eagle.rotation == 0) {
-		eagle.y -= 20;
-	} else if (eagle.rotation == 1) {
-		eagle.x += 20;
-	} else if (eagle.rotation == 2) {
-		eagle.y += 20;
-	} else if (eagle.rotation == 3) {
-		eagle.x -= 20
-	};
-};
+
+
 
 function eagleAlive() {
 	return eagle.x > -60 && eagle.x < 640 && eagle.y > -60 && eagle.y< 500
@@ -357,9 +328,9 @@ function snekLoop() {
 	if (gameOn()) {
 		calcDirection();
 		if (eagleAlive() == false) {
-			resetEagle();
+			eagle.reset();
 		} else {
-			updateEagleLocation();
+			eagle.updateLocation();
 		};
 		//makes game faster over time
 		if (snek.loopSpeed > 200) {
@@ -582,7 +553,7 @@ export default <DefineComponent>{
 			};
 		});
 
-		resetEagle();
+		eagle.reset();
 		resetFood();
 		resetRock();
 
