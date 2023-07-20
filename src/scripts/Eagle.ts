@@ -11,6 +11,10 @@ export default class Eagle {
 	anim= 0
 	rotation= 1
 	shadowIntensity= 10
+  ctx: CanvasRenderingContext2D
+  constructor(ctx: CanvasRenderingContext2D) {
+    this.ctx = ctx
+  }
   reset() {
     this.rotation = Math.floor(Math.random() * 4)
     if (this.rotation == 0) {
@@ -38,4 +42,42 @@ export default class Eagle {
       this.x -= 20
     };
   };
+
+  isAlive() {
+    return this.x > -60 && this.x < 640 && this.y > -60 && this.y< 500
+  }
+
+  draw() {
+    this.drawShadow()
+    this.ctx.save();
+    this.ctx.translate(this.x + 10, this.y + 10);
+    this.ctx.rotate(this.rotation * (Math.PI / 2));
+  
+    this.ctx.drawImage(this.image, 0, this.anim * 32, 32, 32, -32, -32, 64, 64);
+    this.ctx.restore();
+  }
+
+  drawShadow() {
+    this.ctx.globalAlpha = 0.3;
+    this.ctx.save();
+    this.ctx.translate(
+      this.x + 10 + this.shadowIntensity,
+      this.y + 10 + this.shadowIntensity
+    );
+    this.ctx.rotate(this.rotation * (Math.PI / 2));
+  
+    this.ctx.drawImage(
+      this.shadowImage,
+      0,
+      this.anim * 32,
+      32,
+      32,
+      -32,
+      -32,
+      64,
+      64
+    );
+    this.ctx.restore();
+    this.ctx.globalAlpha = 1;
+  }
 };

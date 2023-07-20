@@ -10,7 +10,7 @@ import pauseImg from '../assets/images/pause.png'
 import playImg from '../assets/images/play.png'
 import resetImgString from '../assets/images/reset.png'
 import rockImg from '../assets/images/rock.png'
-import snekImg from '../assets/images/snek.png'
+
 //audio
 import eat from '../assets/audio/eat.wav';
 import pauseAudio from '../assets/audio/pause.mp3';
@@ -19,8 +19,10 @@ import theme1 from '../assets/audio/theme1.mp3';
 //game objects
 
 import Eagle from './Eagle.js';
+import Snek from './Snek.js';
 
-const eagle = new Eagle()
+let eagle: Eagle
+let snek: Snek
 
 let c: HTMLCanvasElement
 let ctx: CanvasRenderingContext2D
@@ -42,22 +44,12 @@ export const game = {
 	bImg: createImage(bImg),
 }
 
-
-
-const snek = {
-	'image': createImage(snekImg),
-	'anim': 0,
-	'height': 40,
-	'displayDirection': 0,
-	'loopSpeed': 400,
-	'life': 3
-};
-
 const mouse = {
 	'image': createImage(mouseImg),
 	'rotation': 0,
 	'anim': 0,
-	'height': 20
+	'height': 20,
+	location:[20 + Math.floor(Math.random() * 28) * 20, 20 + Math.floor(Math.random() * 18) * 20]
 }
 
 const pause = {
@@ -90,7 +82,7 @@ const dirt = {
 	'animating': true,
 }
 
-const audio = {
+export const audio = {
 	'eat': createAudio(eat),
 	'pauseAudio': createAudio(pauseAudio),
 	'theme1': createAudio(theme1),
@@ -108,17 +100,12 @@ let ch: number
 
 mouse.rotation = Math.floor(Math.random() * 4);
 
-let foodLocation = [20 + Math.floor(Math.random() * 28) * 20, 20 + Math.floor(Math.random() * 18) * 20]
-let pArray = [[300, 200], [280, 200], [260, 200]];
-let pDirection = 90;
 let gameActive = true;
 
 function reset() {
-	snek.life = 3
+	snek.reset()
 	game.startTime = Date.now();
 	gameActive = true;
-	pArray = [[300, 200], [280, 200], [260, 200]];
-	pDirection = 90;
 	//reset mouse and eagle
 	eagle.reset()
 	game.paused = false;
@@ -127,22 +114,18 @@ function reset() {
 };
 
 function lifeReset() {
-	pArray[0][0] = 300
-	pArray[0][1] = 200
-	for (var i = 1; i < pArray.length; i++) {
-		pArray[i][0] = 280;
-		pArray[i][1] = 200;
-	};
-	pDirection = 90;
+	
+
 	//reset mouse and eagle
 	resetFood()
 	eagle.reset()
+	snek.lifereset()
 	resetRock();
 	snek.life -= 1;
 }
 
 function resetFood() {
-	foodLocation = [Math.floor(Math.random() * 28) * 20 + 20, Math.floor(Math.random() * 18) * 20 + 20]
+	mouse.location = [Math.floor(Math.random() * 28) * 20 + 20, Math.floor(Math.random() * 18) * 20 + 20]
 }
 
 function resetRock() {
@@ -171,103 +154,25 @@ function secsToMins(sec: number) {
 	}
 }
 
-function calcDirection() {
-	for (var i = pArray.length - 1; i > 0; i -= 1) {
-		pArray[i][0] = pArray[i - 1][0]
-		pArray[i][1] = pArray[i - 1][1]
-
-	};
-	if (pDirection == 0) {
-		pArray[0][1] -= 20;
-	} else if (pDirection == 90) {
-		pArray[0][0] += 20;
-	} else if (pDirection == 180) {
-		pArray[0][1] += 20;
-	} else if (pDirection == 270) {
-		pArray[0][0] -= 20;
-	};
-	snek.displayDirection = pDirection
-}
-
-
-
-
-
-function eagleAlive() {
-	return eagle.x > -60 && eagle.x < 640 && eagle.y > -60 && eagle.y< 500
-}
-
 function foodDistance() {
-	return Math.sqrt(Math.abs(pArray[0][0] - foodLocation[0]) ** 2 + Math.abs(pArray[0][1] - foodLocation[1]) ** 2)
-}
-
-function checkFoodCollision() {
-	if (foodLocation[0] == pArray[0][0] && foodLocation[1] == pArray[0][1]) {
-		audio.eat.play();
-		pArray.push([pArray[pArray.length - 1][0], pArray[pArray.length - 1][1]])
-		updateHS();
-		foodLocation = [20 + Math.floor(Math.random() * 28) * 20, 20 + Math.floor(Math.random() * 18) * 20]
-		dirt.animating = true;
-		dirt.anim = 25;
-		dirt.x = foodLocation[0];
-		dirt.y = foodLocation[1];
-	};
-};
-
-function checkRockCollision() {
-	for (var i = 0; i < rock.arr.length; i++) {
-		if (pArray[0][0] == rock.arr[i][0] && pArray[0][1] == rock.arr[i][1]) {
-			return true;
-		};
-	};
-	return false;
-};
-
-function checkBodyCollision() {
-	for (var i = 1; i < pArray.length; i++) {
-		if (pArray[0][0] == pArray[i][0] && pArray[0][1] == pArray[i][1]) {
-			return false;
-		}
-	}
-	return true;
+	return Math.sqrt(Math.abs(snek.pArr[0][0] - mouse.location[0]) ** 2 + Math.abs(snek.pArr[0][1] - mouse.location[1]) ** 2)
 }
 
 function isAlive() {
-	return pArray[0][0] > 0 && pArray[0][0] < cw - 20 && pArray[0][1] > 20 && pArray[0][1] < ch - 20
-};
-
-function updateHS() {
-	if (pArray.length - 3 > Cookies.get('highscore')) {
-		Cookies.set('highscore', pArray.length - 3)
-	}
-}
-
-function checkEagleCollision() {
-	for (var i = 0; i < pArray.length; i++) {
-		if (eagle.rotation == 0 || eagle.rotation == 2) {
-			if ((pArray[i][0] == eagle.x && pArray[i][1] == eagle.y) || (pArray[i][0] == eagle.x && pArray[i][1] == eagle.y + 20) || (pArray[i][0] == eagle.x && pArray[i][1] == eagle.y - 20)) {
-				return true;
-			};
-		} else {
-			if ((pArray[i][0] == eagle.x && pArray[i][1] == eagle.y) || (pArray[i][0] == eagle.x + 20 && pArray[i][1] == eagle.y) || (pArray[i][0] == eagle.x - 20 && pArray[i][1] == eagle.y)) {
-				return true;
-			};
-		};
-	};
-	return false;
+	return snek.pArr[0][0] > 0 && snek.pArr[0][0] < cw - 20 && snek.pArr[0][1] > 20 && snek.pArr[0][1] < ch - 20
 };
 
 function logKey(event: KeyboardEvent) {
 	event.preventDefault()
 	console.log(event.code)
 	if ((event.key == 'w' || event.code == 'ArrowUp') && snek.displayDirection != 180) {
-		pDirection = 0;
+		snek.direction = 0;
 	} else if ((event.key == 'd' || event.code == 'ArrowRight') && snek.displayDirection != 270) {
-		pDirection = 90;
+		snek.direction = 90;
 	} else if ((event.key == 's' || event.code == 'ArrowDown') && snek.displayDirection != 0) {
-		pDirection = 180;
+		snek.direction = 180;
 	} else if ((event.key == 'a' || event.code == 'ArrowLeft') && snek.displayDirection != 90) {
-		pDirection = 270;
+		snek.direction = 270;
 	};
 }
 
@@ -277,7 +182,7 @@ function gameOn() {
 		if (game.paused || game.startPage) {
 			return false;
 		}
-		if (isAlive() && checkBodyCollision() && checkEagleCollision() == false && checkRockCollision() == false) {
+		if (isAlive() && snek.checkBodyCollision() && !snek.checkEagleCollision(eagle) && !snek.checkRockCollision(rock)) {
 			return true;
 		} else {
 			if (snek.life > 1) {
@@ -308,17 +213,17 @@ function foodLoop() {
 	if (gameOn()) {
 		if (foodDistance() <= 150) {
 			if (mouse.rotation == 0) {
-				foodLocation[1] -= 20;
+				mouse.location[1] -= 20;
 			} else if (mouse.rotation == 1) {
-				foodLocation[0] += 20;
+				mouse.location[0] += 20;
 			} else if (mouse.rotation == 2) {
-				foodLocation[1] += 20;
+				mouse.location[1] += 20;
 			} else if (mouse.rotation == 3) {
-				foodLocation[0] -= 20;
+				mouse.location[0] -= 20;
 			};
 		};
 		mouse.rotation = Math.floor(Math.random() * 4);
-		if (foodLocation[0] <= 20 || foodLocation[0] >= 580 || foodLocation[1] <= 20 || foodLocation[1] >= 380) {
+		if (mouse.location[0] <= 20 || mouse.location[0] >= 580 || mouse.location[1] <= 20 || mouse.location[1] >= 380) {
 			resetFood()
 		};
 	};
@@ -326,8 +231,8 @@ function foodLoop() {
 
 function snekLoop() {
 	if (gameOn()) {
-		calcDirection();
-		if (eagleAlive() == false) {
+		snek.calcDirection();
+		if (eagle.isAlive() == false) {
 			eagle.reset();
 		} else {
 			eagle.updateLocation();
@@ -345,7 +250,7 @@ function snekLoop() {
 function displayLoop() {
 	if (gameOn()) {
 
-		checkFoodCollision();
+		snek.checkFoodCollision(mouse,dirt);
 
 		background();
 		drawRocks()
@@ -355,13 +260,12 @@ function displayLoop() {
 		drawPause();
 		drawReset();
 
-		body();
-		head();
+		snek.drawBody();
+		snek.drawHead();
 		drawFood();
 		drawDirt();
 
-		drawEagleShadow()
-		drawEagle();
+		eagle.draw();
 	};
 	if (game.paused) {
 		pausedWords();
@@ -374,13 +278,7 @@ function displayLoop() {
 	};
 };
 
-document.addEventListener('keyup', logKey);
 
-document.addEventListener("keydown", function (e) {
-	if (["Space", "ArrowUp", "ArrowDown"].includes(e.code)) {
-		e.preventDefault();
-	}
-});
 
 //****************************************//
 
@@ -397,63 +295,10 @@ export function drawHearts() {
 export function drawFood() {
 	if (dirt.animating) {
 		ctx.save();
-		ctx.translate(foodLocation[0] + 10, foodLocation[1] + 10);
+		ctx.translate(mouse.location[0] + 10, mouse.location[1] + 10);
 		ctx.rotate((mouse.rotation * Math.PI) / 2 + Math.PI);
 		ctx.drawImage(mouse.image, -10, -10);
 		ctx.restore();
-	}
-}
-
-export function head() {
-	ctx.save();
-	ctx.translate(pArray[0][0] + 10, pArray[0][1] + 10);
-	ctx.rotate((pDirection * Math.PI) / 180);
-	ctx.drawImage(snek.image, 0, snek.anim * 40, 40, 40, -20, -20, 40, 40);
-	ctx.restore();
-}
-
-export function drawEagle() {
-	ctx.save();
-	ctx.translate(eagle.x + 10, eagle.y + 10);
-	ctx.rotate(eagle.rotation * (Math.PI / 2));
-
-	ctx.drawImage(eagle.image, 0, eagle.anim * 32, 32, 32, -32, -32, 64, 64);
-	ctx.restore();
-}
-
-export function drawEagleShadow() {
-	ctx.globalAlpha = 0.3;
-	ctx.save();
-	ctx.translate(
-		eagle.x + 10 + eagle.shadowIntensity,
-		eagle.y + 10 + eagle.shadowIntensity
-	);
-	ctx.rotate(eagle.rotation * (Math.PI / 2));
-
-	ctx.drawImage(
-		eagle.shadowImage,
-		0,
-		eagle.anim * 32,
-		32,
-		32,
-		-32,
-		-32,
-		64,
-		64
-	);
-	ctx.restore();
-	ctx.globalAlpha = 1;
-}
-
-export function body() {
-	ctx.strokeStyle = "rgb(40, 156, 36)";
-	ctx.lineWidth = 10;
-
-	for (var i = 0; i < pArray.length - 1; i++) {
-		ctx.beginPath();
-		ctx.moveTo(pArray[i][0] + 10, pArray[i][1] + 10);
-		ctx.lineTo(pArray[i + 1][0] + 10, pArray[i + 1][1] + 10);
-		ctx.stroke();
 	}
 }
 
@@ -496,7 +341,7 @@ export function drawScore() {
 	ctx.font = "48px serif";
 	ctx.lineWidth = 2;
 	ctx.strokeStyle = "rgb(0,0,0)";
-	ctx.fillText("Score : " + (pArray.length - 3), 25, 430, 300);
+	ctx.fillText("Score : " + (snek.pArr.length - 3), 25, 430, 300);
 	ctx.fillText("Highscore : " + Cookies.get("highscore"), 240, 430);
 	ctx.strokeRect(20, 390, 200, 55);
 	ctx.strokeRect(235, 390, 300, 55);
@@ -525,6 +370,9 @@ export default <DefineComponent>{
 		c = this.$refs.canvas
 		ctx = c.getContext('2d') ?? err();
 		ctx.imageSmoothingEnabled = false;
+
+		eagle = new Eagle(ctx)
+		snek = new Snek(ctx);
 
 		cw = c.width;
 		ch = c.height - 60;
@@ -562,5 +410,13 @@ export default <DefineComponent>{
 		window.setInterval(eagleLoop, 150);
 
 		window.setTimeout(snekLoop, snek.loopSpeed);
+
+		document.addEventListener('keyup', logKey);
+
+		document.addEventListener("keydown", function (e) {
+			if (["Space", "ArrowUp", "ArrowDown"].includes(e.code)) {
+				e.preventDefault();
+			}
+		});
 	}
 }
