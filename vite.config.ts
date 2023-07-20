@@ -14,5 +14,7 @@ export default defineConfig({
   base:'/snek/',
   build:{
     outDir,
+    emptyOutDir: true,
+    minify: true
   },
 })
