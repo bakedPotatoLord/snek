@@ -1,11 +1,11 @@
 
-import thisImg from '../assets/images/eagle.png'
-import thisShadow from '../assets/images/eagleShadow.png'
+import eagleImg from '../assets/images/eagle.png'
+import eagleShadow from '../assets/images/eagleShadow.png'
 import { createImage } from './functions.js'
 
 export default class Eagle {
-	image= createImage(thisImg)
-	shadowImage= createImage(thisShadow)
+	image= createImage(eagleImg)
+	shadowImage= createImage(eagleShadow)
 	x= 40
 	y= 40
 	anim= 0
@@ -27,7 +27,6 @@ export default class Eagle {
       this.y = Math.floor(Math.random() * 18) * 20 + 20
     };
   };
-
   updateLocation() {
     if (this.rotation == 0) {
       this.y -= 20;
