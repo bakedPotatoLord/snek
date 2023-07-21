@@ -3,11 +3,6 @@ import { DefineComponent } from 'vue';
 import { createAudio, createImage } from './functions.js'
 //images
 import dirtImg from '../assets/images/dirt.png'
-import heartImg from '../assets/images/heart.png'
-import pauseImg from '../assets/images/pause.png'
-import playImg from '../assets/images/play.png'
-import resetImgString from '../assets/images/reset.png'
-import rockImg from '../assets/images/rock.png'
 
 //audio
 import eat from '../assets/audio/eat.wav';
@@ -20,10 +15,13 @@ import Eagle from './Eagle.js';
 import Snek from './Snek.js';
 import Mouse from './Mouse.js';
 import Game from './Game.js';
+import Rocks from './Rocks.js';
+import { background, drawHearts, drawPause, drawReset, drawScore, gameOver, pause, pausedWords, play, resetImg, startPage } from './background.js';
 
 let eagle: Eagle
 let snek: Snek
 let mouse: Mouse
+let rocks: Rocks
 
 let c: HTMLCanvasElement
 let ctx: CanvasRenderingContext2D
@@ -35,29 +33,6 @@ function err(): never {
 if (Cookies.get('highscore') == undefined) {
 	Cookies.set('highscore', "0");
 };
-
-
-const pause = {
-	'image': createImage(pauseImg),
-	'x': 566,
-	'y': 4
-}
-
-const resetImg = {
-	'image': createImage(resetImgString),
-	'x': 530,
-	'y': 4
-}
-
-const play = {
-	'image': createImage(playImg),
-	'x': 236,
-	'y': 150,
-}
-
-const heart = {
-	'image': createImage(heartImg),
-}
 
 const dirt = {
 	'image': createImage(dirtImg),
@@ -71,20 +46,10 @@ export const audio = {
 	'eat': createAudio(eat),
 	'pauseAudio': createAudio(pauseAudio),
 	'theme1': createAudio(theme1),
-
-}
-
-const rock = {
-	image: createImage(rockImg),
-	arr: <any[]>[],
-	num: 0
 }
 
 export const cw = 600
 export const ch = 400
-
-
-
 
 function reset() {
 	Game.startTime = Date.now();
@@ -102,35 +67,11 @@ function lifeReset() {
 	mouse.reset()
 	eagle.reset()
 	snek.lifereset()
-	resetRock();
+	rocks.reset();
 	snek.life -= 1;
 }
 
-function resetRock() {
-	rock.arr = []
-	rock.num = Math.floor(Math.random() * 10) + 5;
-	for (var i = 0; i < rock.num; i++) {
-		rock.arr.push([Math.floor(Math.random() * 28) * 20 + 20, Math.floor(Math.random() * 17) * 20 + 40]);
-	};
-	for (var i = 0; i < rock.num; i++) {
-		if (rock.arr[i][1] == 200) {
-			rock.arr[i][1] += 20
-		}
-	};
-}
 
-function secsToMins(sec: number) {
-	let i = 0;
-	while (sec >= 60) {
-		sec -= 60;
-		i += 1;
-	};
-	if (sec > 9) {
-		return 'Survival time ' + i + ':' + sec;
-	} else {
-		return 'Survival time ' + i + ':0' + sec;
-	}
-}
 
 
 
@@ -149,26 +90,11 @@ function logKey(event: KeyboardEvent) {
 	snek.drawHead()
 }
 
-// must factor in Game.paused == false && Game.startPage == false
-
-
-
-
-function foodLoop() {
-	if (Game.on()) {
-		
-		mouse.rotation = Math.floor(Math.random() * 4);
-		if (mouse.location[0] <= 20 || mouse.location[0] >= 580 || mouse.location[1] <= 20 || mouse.location[1] >= 380) {
-			mouse.reset()
-		};
-	};
-};
-
 function checkColissionLoop() {
 	if (snek.isAlive() &&
 		snek.checkBodyCollision() &&
 		!snek.checkEagleCollision(eagle) &&
-		!snek.checkRockCollision(rock)) {
+		!snek.checkRockCollision(rocks)) {
 	} else {
 		if (snek.life > 1) {
 			lifeReset();
@@ -185,95 +111,28 @@ function displayLoop() {
 
 		snek.checkFoodCollision(mouse, dirt);
 
-		background();
-		drawRocks()
+		background(ctx);
+		rocks.draw()
 
-		drawScore();
-		drawHearts();
-		drawPause();
-		drawReset();
+		drawScore(ctx,snek);
+		drawHearts(ctx,snek);
+		drawPause(ctx);
+		drawReset(ctx);
 
 		snek.drawBody();
 		snek.drawHead();
 		mouse.draw(dirt);
 		drawDirt();
-
 		eagle.draw();
 	};
-	if (Game.paused) {
-		pausedWords();
-	};
-	if (Game.over) {
-		gameOver()
-	};
-	if (Game.startPage) {
-		startPage()
-	};
+	if (Game.paused) pausedWords(ctx);
+	if (Game.over) gameOver(ctx)
+	if (Game.startPage) startPage(ctx)
 };
 
 //****************************************//
 
-export function background() {
-	ctx.drawImage(Game.bImg, 0, 0);
-}
 
-export function drawHearts() {
-	for (var i = 0; i < snek.life; i++) {
-		ctx.drawImage(heart.image, 210 + 40 * i, 4);
-	}
-}
-
-export function drawRocks() {
-	for (var i = 0; i < rock.num; i++) {
-		ctx.drawImage(rock.image, rock.arr[i][0], rock.arr[i][1]);
-	}
-}
-
-export function drawPause() {
-	ctx.drawImage(pause.image, pause.x, pause.y);
-}
-
-export function drawReset() {
-	ctx.drawImage(resetImg.image, resetImg.x, resetImg.y);
-}
-
-export function pausedWords() {
-	ctx.strokeStyle = "brown";
-	ctx.fillText("PAUSED", 200, 200);
-}
-
-export function gameOver() {
-	background();
-	ctx.fillStyle = "rgb(0,0,0)";
-	ctx.fillText("GAME OVER", 175, 200);
-
-	ctx.fillText("PLAY AGAIN", 175, 300);
-}
-
-export function startPage() {
-	background();
-	ctx.fillStyle = "rgb(0,0,0)";
-	ctx.fillText("PLAY SNEK", 175, 100);
-	ctx.drawImage(play.image, play.x, play.y, 128, 128);
-}
-
-export function drawScore() {
-	ctx.fillStyle = "black";
-	ctx.font = "48px serif";
-	ctx.lineWidth = 2;
-	ctx.strokeStyle = "rgb(0,0,0)";
-	ctx.fillText("Score : " + (snek.pArr.length - 3), 25, 430, 300);
-	ctx.fillText("Highscore : " + Cookies.get("highscore"), 240, 430);
-	ctx.strokeRect(20, 390, 200, 55);
-	ctx.strokeRect(235, 390, 300, 55);
-
-	ctx.fillText(
-		secsToMins(Math.floor((Date.now() - Game.startTime) / 1000)),
-		20,
-		35,
-		160
-	);
-}
 
 export function drawDirt() {
 	if (dirt.animating) {
@@ -295,11 +154,12 @@ export default <DefineComponent>{
 		eagle = new Eagle(ctx)
 		snek = new Snek(ctx);
 		mouse = new Mouse(ctx);
-		
+		rocks = new Rocks(ctx);
+
 		c.width = cw;
 		c.height = ch + 60;
 
-		c.addEventListener('click', (event)=> {
+		c.addEventListener('click', (event) => {
 
 			if (event.offsetX > pause.x && event.offsetX < pause.x + 32 && event.offsetY > pause.y && event.offsetY < pause.y + 32) {
 				if (Game.paused) {
@@ -325,7 +185,7 @@ export default <DefineComponent>{
 
 		eagle.reset();
 		mouse.reset();
-		resetRock();
+		rocks.reset();
 
 		window.setInterval(displayLoop, 22);
 		checkColissionLoop();
