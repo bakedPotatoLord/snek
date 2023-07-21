@@ -14,6 +14,7 @@ export default class Eagle {
   ctx: CanvasRenderingContext2D
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx
+    this.loop()
   }
   reset() {
     this.rotation = Math.floor(Math.random() * 4)
@@ -58,14 +59,13 @@ export default class Eagle {
   }
 
   drawShadow() {
-    this.ctx.globalAlpha = 0.3;
     this.ctx.save();
+    this.ctx.globalAlpha = 0.3;
     this.ctx.translate(
       this.x + 10 + this.shadowIntensity,
       this.y + 10 + this.shadowIntensity
     );
     this.ctx.rotate(this.rotation * (Math.PI / 2));
-  
     this.ctx.drawImage(
       this.shadowImage,
       0,
@@ -77,7 +77,15 @@ export default class Eagle {
       64,
       64
     );
-    this.ctx.restore();
     this.ctx.globalAlpha = 1;
+    this.ctx.restore();
+  }
+  loop(){
+    if (!this.isAlive()) {
+      this.reset();
+    } else {
+      this.updateLocation();
+    };
+    setTimeout(()=>this.loop(), 300)
   }
 };
