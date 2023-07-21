@@ -127,7 +127,6 @@ export default class Snek {
 
   loop() {
     if (Game.on()) {
-      console.log('snek loop');
       this.calcDirection();
       //makes game faster over time
       if (this.loopSpeed > 200) {
