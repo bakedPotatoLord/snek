@@ -132,10 +132,6 @@ function secsToMins(sec: number) {
 	}
 }
 
-function foodDistance() {
-	return Math.sqrt(Math.abs(snek.pArr[0][0] - mouse.location[0]) ** 2 + Math.abs(snek.pArr[0][1] - mouse.location[1]) ** 2)
-}
-
 
 
 function logKey(event: KeyboardEvent) {
@@ -150,37 +146,17 @@ function logKey(event: KeyboardEvent) {
 	} else if ((event.key == 'a' || event.code == 'ArrowLeft') && snek.displayDirection != 90) {
 		snek.direction = 270;
 	};
+	snek.drawHead()
 }
 
 // must factor in Game.paused == false && Game.startPage == false
 
 
-function eagleLoop() {
-	if (Game.on()) {
-		eagle.anim = eagle.anim + 1
-		if (eagle.anim == 4) {
-			eagle.anim = 0;
-		};
-		snek.anim += 1;
-		if (snek.anim == 15) {
-			snek.anim = 0
-		}
-	};
-};
+
 
 function foodLoop() {
 	if (Game.on()) {
-		if (foodDistance() <= 150) {
-			if (mouse.rotation == 0) {
-				mouse.location[1] -= 20;
-			} else if (mouse.rotation == 1) {
-				mouse.location[0] += 20;
-			} else if (mouse.rotation == 2) {
-				mouse.location[1] += 20;
-			} else if (mouse.rotation == 3) {
-				mouse.location[0] -= 20;
-			};
-		};
+		
 		mouse.rotation = Math.floor(Math.random() * 4);
 		if (mouse.location[0] <= 20 || mouse.location[0] >= 580 || mouse.location[1] <= 20 || mouse.location[1] >= 380) {
 			mouse.reset()
@@ -319,11 +295,11 @@ export default <DefineComponent>{
 		eagle = new Eagle(ctx)
 		snek = new Snek(ctx);
 		mouse = new Mouse(ctx);
-
+		
 		c.width = cw;
 		c.height = ch + 60;
 
-		c.addEventListener('click', function (event) {
+		c.addEventListener('click', (event)=> {
 
 			if (event.offsetX > pause.x && event.offsetX < pause.x + 32 && event.offsetY > pause.y && event.offsetY < pause.y + 32) {
 				if (Game.paused) {
@@ -352,15 +328,8 @@ export default <DefineComponent>{
 		resetRock();
 
 		window.setInterval(displayLoop, 22);
-		window.setInterval(foodLoop, 800);
-		window.setInterval(eagleLoop, 150);
-
 		checkColissionLoop();
-
-		window.setTimeout(() => snek.loop(), snek.loopSpeed);
-
 		document.addEventListener('keyup', logKey);
-
 		document.addEventListener("keydown", function (e) {
 			if (["Space", "ArrowUp", "ArrowDown"].includes(e.code)) {
 				e.preventDefault();
