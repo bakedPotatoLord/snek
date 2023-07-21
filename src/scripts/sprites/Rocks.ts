@@ -1,5 +1,5 @@
 import { createImage } from "../functions.js";
-import rockImg from '../assets/images/rock.png'
+import rockImg from '../../assets/images/rock.png'
 
 export class Rocks {
   image = createImage(rockImg)

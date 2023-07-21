@@ -1,4 +1,4 @@
-import mouseImg from '../assets/images/mouse.png'
+import mouseImg from '../../assets/images/mouse.png'
 import { createImage } from '../functions.js'
 import Game from '../Game.js'
 

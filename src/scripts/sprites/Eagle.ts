@@ -1,6 +1,6 @@
 
-import eagleImg from '../assets/images/eagle.png'
-import eagleShadow from '../assets/images/eagleShadow.png'
+import eagleImg from '../../assets/images/eagle.png'
+import eagleShadow from '../../assets/images/eagleShadow.png'
 import { createImage } from '../functions.js'
 import Game from '../Game.js'
 

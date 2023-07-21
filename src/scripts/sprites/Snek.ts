@@ -1,4 +1,4 @@
-import snekImg from '../assets/images/snek.png'
+import snekImg from '../../assets/images/snek.png'
 import { createImage } from '../functions.js'
 import Cookies from 'js-cookie'
 import { audio, ch, cw } from '../script.js'
@@ -9,7 +9,6 @@ export class Snek {
   image = createImage(snekImg)
   anim = 0
   height = 40
-  displayDirection = 0
   loopSpeed = 400
   life = 3
   direction = 90;
@@ -71,7 +70,6 @@ export class Snek {
     } else if (this.direction == 270) {
       this.pArr[0][0] -= 20;
     };
-    this.displayDirection = this.direction
   }
 
   checkEagleCollision(eagle: Eagle) {

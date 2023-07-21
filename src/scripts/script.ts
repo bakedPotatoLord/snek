@@ -55,13 +55,13 @@ function lifeReset() {
 function logKey(event: KeyboardEvent) {
 	event.preventDefault()
 	console.log(event.code)
-	if ((event.key == 'w' || event.code == 'ArrowUp') && snek.displayDirection != 180) {
+	if ((event.key == 'w' || event.code == 'ArrowUp') && snek.direction != 180) {
 		snek.direction = 0;
-	} else if ((event.key == 'd' || event.code == 'ArrowRight') && snek.displayDirection != 270) {
+	} else if ((event.key == 'd' || event.code == 'ArrowRight') && snek.direction != 270) {
 		snek.direction = 90;
-	} else if ((event.key == 's' || event.code == 'ArrowDown') && snek.displayDirection != 0) {
+	} else if ((event.key == 's' || event.code == 'ArrowDown') && snek.direction != 0) {
 		snek.direction = 180;
-	} else if ((event.key == 'a' || event.code == 'ArrowLeft') && snek.displayDirection != 90) {
+	} else if ((event.key == 'a' || event.code == 'ArrowLeft') && snek.direction != 90) {
 		snek.direction = 270;
 	};
 	snek.drawHead()

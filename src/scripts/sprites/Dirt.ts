@@ -1,5 +1,5 @@
 import { createImage } from "../functions.js"
-import dirtImg from '../assets/images/dirt.png'
+import dirtImg from '../../assets/images/dirt.png'
 
 
 export class Dirt {
