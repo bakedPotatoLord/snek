@@ -2,19 +2,21 @@
 import eagleImg from '../assets/images/eagle.png'
 import eagleShadow from '../assets/images/eagleShadow.png'
 import { createImage } from './functions.js'
+import Game from './Game.js'
 
 export default class Eagle {
-	image= createImage(eagleImg)
-	shadowImage= createImage(eagleShadow)
-	x= 40
-	y= 40
-	anim= 0
-	rotation= 1
-	shadowIntensity= 10
+  image = createImage(eagleImg)
+  shadowImage = createImage(eagleShadow)
+  x = 40
+  y = 40
+  anim = 0
+  rotation = 1
+  shadowIntensity = 10
   ctx: CanvasRenderingContext2D
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx
-    this.loop()
+    this.movementLoop()
+    window.setInterval(() => this.animationLoop(), 150);
   }
   reset() {
     this.rotation = Math.floor(Math.random() * 4)
@@ -45,7 +47,7 @@ export default class Eagle {
   };
 
   isAlive() {
-    return this.x > -60 && this.x < 640 && this.y > -60 && this.y< 500
+    return this.x > -60 && this.x < 640 && this.y > -60 && this.y < 500
   }
 
   draw() {
@@ -53,7 +55,6 @@ export default class Eagle {
     this.ctx.save();
     this.ctx.translate(this.x + 10, this.y + 10);
     this.ctx.rotate(this.rotation * (Math.PI / 2));
-  
     this.ctx.drawImage(this.image, 0, this.anim * 32, 32, 32, -32, -32, 64, 64);
     this.ctx.restore();
   }
@@ -80,12 +81,17 @@ export default class Eagle {
     this.ctx.globalAlpha = 1;
     this.ctx.restore();
   }
-  loop(){
-    if (!this.isAlive()) {
-      this.reset();
-    } else {
+  movementLoop() {
+    !this.isAlive() ?
+      this.reset() :
       this.updateLocation();
-    };
-    setTimeout(()=>this.loop(), 300)
+    setTimeout(() => this.movementLoop(), 300)
   }
+
+  animationLoop() {
+    if (Game.on()) {
+      this.anim = (this.anim + 1) % 4
+    };
+  };
 };
+
