@@ -1,7 +1,7 @@
 import bImg from '../assets/images/background.png'
 import { createImage } from "./functions.js"
 
-export class Game{
+export default class Game{
   static startTime= Date.now()
 	static paused= false
 	static rect= []
