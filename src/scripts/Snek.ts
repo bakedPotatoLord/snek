@@ -3,7 +3,7 @@ import Eagle from './Eagle.js'
 import { createImage } from './functions.js'
 import Cookies from 'js-cookie'
 import { audio, ch, cw } from './script.js'
-import { Game } from './Game.js'
+import Game from './Game.js'
 
 export default class Snek {
   image = createImage(snekImg)
@@ -136,6 +136,6 @@ export default class Snek {
         this.loopSpeed = 200
       }
     };
-    setTimeout(()=>this.loop(), this.loopSpeed);
+    setTimeout(() => this.loop(), this.loopSpeed);
   };
 }
