@@ -1,7 +1,7 @@
-import { createImage } from "./functions.js";
+import { createImage } from "../functions.js";
 import rockImg from '../assets/images/rock.png'
 
-export default class Rocks {
+export class Rocks {
   image = createImage(rockImg)
   arr: [number,number][] = []
   ctx: CanvasRenderingContext2D

@@ -1,14 +1,14 @@
 import snekImg from '../assets/images/snek.png'
-import Eagle from './Eagle.js'
-import { createImage } from './functions.js'
+import { createImage } from '../functions.js'
 import Cookies from 'js-cookie'
-import { audio, ch, cw } from './script.js'
-import Game from './Game.js'
-import type Rocks from './Rocks.js'
-import type Mouse from './Mouse.js'
-import type Dirt from './Dirt.js'
+import { audio, ch, cw } from '../script.js'
+import Game from '../Game.js'
+import type { Eagle } from './Eagle.js'
+import type { Rocks } from './Rocks.js'
+import type { Mouse } from './Mouse.js'
+import type { Dirt } from './Dirt.js'
 
-export default class Snek {
+export class Snek {
   image = createImage(snekImg)
   anim = 0
   height = 40
@@ -21,7 +21,7 @@ export default class Snek {
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx
     this.movementLoop()
-    setInterval(()=>this.animationLoop(),150)
+    setInterval(() => this.animationLoop(), 150)
   }
 
   drawBody() {

@@ -1,8 +1,8 @@
-import { createImage } from "./functions.js"
+import { createImage } from "../functions.js"
 import dirtImg from '../assets/images/dirt.png'
 
 
-export default class Dirt {
+export class Dirt {
   image = createImage(dirtImg)
   x = 0
   y = 0

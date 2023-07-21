@@ -6,7 +6,7 @@ import { createImage } from './functions.js';
 import heartImg from '../assets/images/heart.png'
 import pauseImg from '../assets/images/pause.png'
 import playImg from '../assets/images/play.png'
-import type Snek from './Snek.js';
+import type {Snek} from './sprites/Snek.js';
 
 export const resetImg = {
 	image: createImage(resetImgString),

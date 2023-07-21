@@ -6,14 +6,10 @@ import { createAudio } from './functions.js'
 import eat from '../assets/audio/eat.wav';
 import pauseAudio from '../assets/audio/pause.mp3';
 import theme1 from '../assets/audio/theme1.mp3';
-
-//game objects
-import Eagle from './Eagle.js';
-import Snek from './Snek.js';
-import Mouse from './Mouse.js';
+//global state manager
 import Game from './Game.js';
-import Rocks from './Rocks.js';
-import Dirt from './sprites/Dirt.js'
+//game objects
+import {Dirt, Rocks, Snek, Eagle, Mouse} from './sprites/index.js'
 import { background, drawHearts, drawPause, drawReset, drawScore, gameOver, pause, pausedWords, play, resetImg, startPage } from './background.js';
 
 let eagle: Eagle

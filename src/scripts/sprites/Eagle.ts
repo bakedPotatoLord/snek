@@ -1,10 +1,10 @@
 
 import eagleImg from '../assets/images/eagle.png'
 import eagleShadow from '../assets/images/eagleShadow.png'
-import { createImage } from './functions.js'
-import Game from './Game.js'
+import { createImage } from '../functions.js'
+import Game from '../Game.js'
 
-export default class Eagle {
+export class Eagle {
   image = createImage(eagleImg)
   shadowImage = createImage(eagleShadow)
   x = 40
