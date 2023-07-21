@@ -1,7 +1,7 @@
 <template>
   <img id="logo" src="./assets/images/logo.png" />
   <br />
-  <canvas ref="canvas" width="600" height="460"></canvas>
+  <canvas ref="canvas"></canvas>
   <br />
   <h1>Instructions</h1>
   <br />
