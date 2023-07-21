@@ -4,6 +4,9 @@ import { createImage } from './functions.js'
 import Cookies from 'js-cookie'
 import { audio, ch, cw } from './script.js'
 import Game from './Game.js'
+import type Rocks from './Rocks.js'
+import type Mouse from './Mouse.js'
+import type Dirt from './Dirt.js'
 
 export default class Snek {
   image = createImage(snekImg)
@@ -91,8 +94,7 @@ export default class Snek {
     }
     return true;
   }
-
-  checkRockCollision(rocks: any) {
+  checkRockCollision(rocks: Rocks) {
     for (let rock of rocks.arr) {
       if (this.pArr[0][0] == rock[0] && this.pArr[0][1] == rock[1]) {
         return true;
@@ -100,8 +102,7 @@ export default class Snek {
     };
     return false;
   };
-
-  checkFoodCollision(mouse: any, dirt: any) {
+  checkFoodCollision(mouse: Mouse, dirt: Dirt) {
     if (mouse.location[0] == this.pArr[0][0] && mouse.location[1] == this.pArr[0][1]) {
       audio.eat.play();
       this.pArr.push([this.pArr[this.pArr.length - 1][0], this.pArr[this.pArr.length - 1][1]])
