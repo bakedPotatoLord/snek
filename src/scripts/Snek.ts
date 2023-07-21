@@ -2,7 +2,8 @@ import snekImg from '../assets/images/snek.png'
 import Eagle from './Eagle.js'
 import { createImage } from './functions.js'
 import Cookies from 'js-cookie'
-import { audio } from './script.js'
+import { audio, ch, cw } from './script.js'
+import { Game } from './Game.js'
 
 export default class Snek {
   image = createImage(snekImg)
@@ -51,11 +52,10 @@ export default class Snek {
       this.pArr[i][0] = 280;
       this.pArr[i][1] = 200;
     };
-    this.life -= 1
   }
 
   calcDirection() {
-    for (var i = this.pArr.length - 1; i > 0; i -= 1) {
+    for (let i = this.pArr.length - 1; i > 0; i -= 1) {
       this.pArr[i][0] = this.pArr[i - 1][0]
       this.pArr[i][1] = this.pArr[i - 1][1]
 
@@ -117,4 +117,25 @@ export default class Snek {
       Cookies.set('highscore', this.pArr.length - 3)
     }
   }
+
+  isAlive() {
+    return this.pArr[0][0] > 0 &&
+      this.pArr[0][0] < cw - 20 &&
+      this.pArr[0][1] > 20 &&
+      this.pArr[0][1] < ch - 20
+  };
+
+  loop() {
+    if (Game.on()) {
+      console.log('snek loop');
+      this.calcDirection();
+      //makes game faster over time
+      if (this.loopSpeed > 200) {
+        this.loopSpeed = 400 - (Math.floor((Date.now() - Game.startTime) / 1000) * 2)
+      } else {
+        this.loopSpeed = 200
+      }
+    };
+    setTimeout(()=>this.loop(), this.loopSpeed);
+  };
 }
