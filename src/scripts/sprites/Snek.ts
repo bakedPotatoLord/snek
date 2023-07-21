@@ -3,10 +3,7 @@ import { createImage } from '../functions.js'
 import Cookies from 'js-cookie'
 import { audio, ch, cw } from '../script.js'
 import Game from '../Game.js'
-import type { Eagle } from './Eagle.js'
-import type { Rocks } from './Rocks.js'
-import type { Mouse } from './Mouse.js'
-import type { Dirt } from './Dirt.js'
+import type { Eagle, Dirt, Rocks, Mouse } from './index.js'
 
 export class Snek {
   image = createImage(snekImg)
