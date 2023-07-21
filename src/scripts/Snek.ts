@@ -17,6 +17,8 @@ export default class Snek {
   pArr = [[300, 200], [280, 200], [260, 200]]
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx
+    this.movementLoop()
+    setInterval(()=>this.animationLoop(),150)
   }
 
   drawBody() {
@@ -125,7 +127,7 @@ export default class Snek {
       this.pArr[0][1] < ch - 20
   };
 
-  loop() {
+  movementLoop() {
     if (Game.on()) {
       this.calcDirection();
       //makes game faster over time
@@ -135,6 +137,12 @@ export default class Snek {
         this.loopSpeed = 200
       }
     };
-    setTimeout(() => this.loop(), this.loopSpeed);
+    setTimeout(() => this.movementLoop(), this.loopSpeed);
+  };
+
+  animationLoop() {
+    if (Game.on()) {
+      this.anim = (this.anim + 1) % 15
+    };
   };
 }
