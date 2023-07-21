@@ -2,10 +2,8 @@ import Cookies from 'js-cookie'
 import { DefineComponent } from 'vue';
 import { createAudio, createImage } from './functions.js'
 //images
-import bImg from '../assets/images/background.png'
 import dirtImg from '../assets/images/dirt.png'
 import heartImg from '../assets/images/heart.png'
-import mouseImg from '../assets/images/mouse.png'
 import pauseImg from '../assets/images/pause.png'
 import playImg from '../assets/images/play.png'
 import resetImgString from '../assets/images/reset.png'
@@ -20,9 +18,12 @@ import theme1 from '../assets/audio/theme1.mp3';
 
 import Eagle from './Eagle.js';
 import Snek from './Snek.js';
+import Mouse from './Mouse.js';
+import Game from './Game.js';
 
 let eagle: Eagle
 let snek: Snek
+let mouse: Mouse
 
 let c: HTMLCanvasElement
 let ctx: CanvasRenderingContext2D
@@ -35,22 +36,6 @@ if (Cookies.get('highscore') == undefined) {
 	Cookies.set('highscore', "0");
 };
 
-export const game = {
-	startTime: Date.now(),
-	paused: false,
-	rect: [],
-	over: false,
-	startPage: true,
-	bImg: createImage(bImg),
-}
-
-const mouse = {
-	'image': createImage(mouseImg),
-	'rotation': 0,
-	'anim': 0,
-	'height': 20,
-	location:[20 + Math.floor(Math.random() * 28) * 20, 20 + Math.floor(Math.random() * 18) * 20]
-}
 
 const pause = {
 	'image': createImage(pauseImg),
@@ -95,37 +80,30 @@ const rock = {
 	num: 0
 }
 
-let cw: number
-let ch: number
+export const cw = 600
+export const ch = 400
 
-mouse.rotation = Math.floor(Math.random() * 4);
 
-let gameActive = true;
+
 
 function reset() {
+	Game.startTime = Date.now();
+	Game.active = true;
 	snek.reset()
-	game.startTime = Date.now();
-	gameActive = true;
-	//reset mouse and eagle
 	eagle.reset()
-	game.paused = false;
-	game.startPage = false;
-	game.over = false
+	mouse.reset()
+	Game.paused = false;
+	Game.startPage = false;
+	Game.over = false
 };
 
 function lifeReset() {
-	
-
 	//reset mouse and eagle
-	resetFood()
+	mouse.reset()
 	eagle.reset()
 	snek.lifereset()
 	resetRock();
 	snek.life -= 1;
-}
-
-function resetFood() {
-	mouse.location = [Math.floor(Math.random() * 28) * 20 + 20, Math.floor(Math.random() * 18) * 20 + 20]
 }
 
 function resetRock() {
@@ -158,9 +136,7 @@ function foodDistance() {
 	return Math.sqrt(Math.abs(snek.pArr[0][0] - mouse.location[0]) ** 2 + Math.abs(snek.pArr[0][1] - mouse.location[1]) ** 2)
 }
 
-function isAlive() {
-	return snek.pArr[0][0] > 0 && snek.pArr[0][0] < cw - 20 && snek.pArr[0][1] > 20 && snek.pArr[0][1] < ch - 20
-};
+
 
 function logKey(event: KeyboardEvent) {
 	event.preventDefault()
@@ -176,28 +152,11 @@ function logKey(event: KeyboardEvent) {
 	};
 }
 
-// must factor in game.paused == false && game.startPage == false
-function gameOn() {
-	if (gameActive) {
-		if (game.paused || game.startPage) {
-			return false;
-		}
-		if (isAlive() && snek.checkBodyCollision() && !snek.checkEagleCollision(eagle) && !snek.checkRockCollision(rock)) {
-			return true;
-		} else {
-			if (snek.life > 1) {
-				lifeReset();
-				console.log('lives  ' + snek.life)
-				return true;
-			} else {
-				game.over = true;
-			}
-		};
-	}
-};
+// must factor in Game.paused == false && Game.startPage == false
+
 
 function eagleLoop() {
-	if (gameOn()) {
+	if (Game.on()) {
 		eagle.anim = eagle.anim + 1
 		if (eagle.anim == 4) {
 			eagle.anim = 0;
@@ -210,7 +169,7 @@ function eagleLoop() {
 };
 
 function foodLoop() {
-	if (gameOn()) {
+	if (Game.on()) {
 		if (foodDistance() <= 150) {
 			if (mouse.rotation == 0) {
 				mouse.location[1] -= 20;
@@ -224,33 +183,31 @@ function foodLoop() {
 		};
 		mouse.rotation = Math.floor(Math.random() * 4);
 		if (mouse.location[0] <= 20 || mouse.location[0] >= 580 || mouse.location[1] <= 20 || mouse.location[1] >= 380) {
-			resetFood()
+			mouse.reset()
 		};
 	};
 };
 
-function snekLoop() {
-	if (gameOn()) {
-		snek.calcDirection();
-		if (eagle.isAlive() == false) {
-			eagle.reset();
+function checkColissionLoop() {
+	if (snek.isAlive() &&
+		snek.checkBodyCollision() &&
+		!snek.checkEagleCollision(eagle) &&
+		!snek.checkRockCollision(rock)) {
+	} else {
+		if (snek.life > 1) {
+			lifeReset();
+			console.log('lives', snek.life)
 		} else {
-			eagle.updateLocation();
-		};
-		//makes game faster over time
-		if (snek.loopSpeed > 200) {
-			snek.loopSpeed = 400 - (Math.floor((Date.now() - game.startTime) / 1000) * 2)
-		} else {
-			snek.loopSpeed = 200
+			Game.over = true;
 		}
 	};
-	window.setTimeout(snekLoop, snek.loopSpeed);
-};
+	requestAnimationFrame(checkColissionLoop);
+}
 
 function displayLoop() {
-	if (gameOn()) {
+	if (Game.on()) {
 
-		snek.checkFoodCollision(mouse,dirt);
+		snek.checkFoodCollision(mouse, dirt);
 
 		background();
 		drawRocks()
@@ -262,43 +219,31 @@ function displayLoop() {
 
 		snek.drawBody();
 		snek.drawHead();
-		drawFood();
+		mouse.draw(dirt);
 		drawDirt();
 
 		eagle.draw();
 	};
-	if (game.paused) {
+	if (Game.paused) {
 		pausedWords();
 	};
-	if (game.over) {
+	if (Game.over) {
 		gameOver()
 	};
-	if (game.startPage) {
+	if (Game.startPage) {
 		startPage()
 	};
 };
 
-
-
 //****************************************//
 
 export function background() {
-	ctx.drawImage(game.bImg, 0, 0);
+	ctx.drawImage(Game.bImg, 0, 0);
 }
 
 export function drawHearts() {
 	for (var i = 0; i < snek.life; i++) {
 		ctx.drawImage(heart.image, 210 + 40 * i, 4);
-	}
-}
-
-export function drawFood() {
-	if (dirt.animating) {
-		ctx.save();
-		ctx.translate(mouse.location[0] + 10, mouse.location[1] + 10);
-		ctx.rotate((mouse.rotation * Math.PI) / 2 + Math.PI);
-		ctx.drawImage(mouse.image, -10, -10);
-		ctx.restore();
 	}
 }
 
@@ -347,7 +292,7 @@ export function drawScore() {
 	ctx.strokeRect(235, 390, 300, 55);
 
 	ctx.fillText(
-		secsToMins(Math.floor((Date.now() - game.startTime) / 1000)),
+		secsToMins(Math.floor((Date.now() - Game.startTime) / 1000)),
 		20,
 		35,
 		160
@@ -373,43 +318,46 @@ export default <DefineComponent>{
 
 		eagle = new Eagle(ctx)
 		snek = new Snek(ctx);
+		mouse = new Mouse(ctx);
 
-		cw = c.width;
-		ch = c.height - 60;
+		c.width = cw;
+		c.height = ch + 60;
 
 		c.addEventListener('click', function (event) {
 
 			if (event.offsetX > pause.x && event.offsetX < pause.x + 32 && event.offsetY > pause.y && event.offsetY < pause.y + 32) {
-				if (game.paused) {
-					game.paused = false;
+				if (Game.paused) {
+					Game.paused = false;
 				} else {
-					game.paused = true;
+					Game.paused = true;
 				};
 			};
-			if (game.startPage == true) {
+			if (Game.startPage == true) {
 				if (event.offsetX > play.x && event.offsetX < play.x + 128 && event.offsetY > play.y && event.offsetY < play.y + 128) {
 					console.log('play button clicked')
-					game.startPage = false;
-					game.startTime = Date.now();
+					Game.startPage = false;
+					Game.startTime = Date.now();
 				};
 			};
 			if (event.offsetX > resetImg.x && event.offsetX < resetImg.x + 32 && event.offsetY > resetImg.y && event.offsetY < resetImg.y + 32) {
 				reset()
 			};
-			if (game.over) {
+			if (Game.over) {
 				reset();
 			};
 		});
 
 		eagle.reset();
-		resetFood();
+		mouse.reset();
 		resetRock();
 
 		window.setInterval(displayLoop, 22);
 		window.setInterval(foodLoop, 800);
 		window.setInterval(eagleLoop, 150);
 
-		window.setTimeout(snekLoop, snek.loopSpeed);
+		checkColissionLoop();
+
+		window.setTimeout(() => snek.loop(), snek.loopSpeed);
 
 		document.addEventListener('keyup', logKey);
 
